@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTag Emergency Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .emergency-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="bg-red-600 p-6 text-white text-center shadow-lg">
+        <h1 class="text-2xl font-bold tracking-tight">SAFETAG EMERGENCY INFO</h1>
+        <p class="text-sm opacity-90 mt-1">First Responders: Please see details below</p>
+    </div>
+
+    <div id="app" class="max-w-md mx-auto p-4 space-y-4">
+        <div class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-red-500">
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-500" id="initials">--</div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800" id="name">Loading Profile...</h2>
+                    <p class="text-gray-500" id="vehicle">Vehicle: --</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 border-t pt-4">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold">Blood Group</p>
+                    <p class="text-lg font-bold text-red-600" id="blood">--</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold">Allergies</p>
+                    <p class="text-sm font-medium text-gray-700" id="allergies">None Reported</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <a id="callGuardian" href="#" class="flex items-center justify-center bg-green-600 text-white w-full py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition">
+                📞 CALL EMERGENCY CONTACT
+            </a>
+            <a href="tel:911" class="flex items-center justify-center bg-blue-600 text-white w-full py-4 rounded-xl font-bold shadow-lg">
+                🚑 CALL AMBULANCE
+            </a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6">
+            <h3 class="font-bold text-gray-800 mb-2">Medical Notes</h3>
+            <p class="text-gray-600 text-sm" id="notes">No additional medical history provided.</p>
+        </div>
+    </div>
+
+    <script>
+        // MOCK DATABASE: In a real app, this would come from your server
+        const userData = {
+            "001": {
+                name: "Rahul Sharma",
+                initials: "RS",
+                vehicle: "KA-01-EF-1234",
+                blood: "O Positive",
+                allergies: "Penicillin, Peanuts",
+                contact: "tel:+1234567890",
+                notes: "Wears contact lenses. Asthmatic (Inhaler in backpack)."
+            },
+            "002": {
+                name: "Sarah Jenkins",
+                initials: "SJ",
+                vehicle: "Bike - Trek Marlin 7",
+                blood: "A Negative",
+                allergies: "None",
+                contact: "tel:+0987654321",
+                notes: "Diabetes Type 1. Insulin pump located on waist."
+            }
+        };
+
+        // Logic to read the URL: index.html?id=001
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('id');
+
+        if (userData[userId]) {
+            const user = userData[userId];
+            document.getElementById('name').innerText = user.name;
+            document.getElementById('initials').innerText = user.initials;
+            document.getElementById('vehicle').innerText = "Vehicle: " + user.vehicle;
+            document.getElementById('blood').innerText = user.blood;
+            document.getElementById('allergies').innerText = user.allergies;
+            document.getElementById('callGuardian').href = user.contact;
+            document.getElementById('notes').innerText = user.notes;
+        } else {
+            document.getElementById('name').innerText = "User Not Found";
+        }
+    </script>
+</body>
+</html>
