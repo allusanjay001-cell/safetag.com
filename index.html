@@ -10,13 +10,14 @@
 
     <div class="bg-red-600 p-6 text-white text-center shadow-lg sticky top-0 z-50">
         <h1 class="text-2xl font-bold tracking-tight uppercase">SafeTag Emergency Info</h1>
-        <p class="text-xs opacity-90 mt-1">First Responders: Vital Data Below</p>
+        <p class="text-xs opacity-90 mt-1 font-medium italic">First Responders: Vital Data Below</p>
     </div>
 
     <div id="app" class="max-w-md mx-auto p-4 space-y-4 pb-10">
         
-        <div id="loader" class="text-center py-10 text-gray-400 font-medium">
-            Searching for medical profile...
+        <div id="loader" class="text-center py-20 text-gray-400 font-medium">
+            <div class="animate-pulse mb-2">Searching for medical profile...</div>
+            <p class="text-xs">Connecting to SafeTag Secure Cloud</p>
         </div>
 
         <div id="profileCard" class="hidden bg-white rounded-2xl shadow-md p-6 border-t-8 border-red-600">
@@ -41,11 +42,11 @@
         </div>
 
         <div id="actionGrid" class="hidden grid grid-cols-1 gap-3">
-            <a id="guardianLink" href="#" class="flex items-center justify-center bg-green-600 text-white py-4 rounded-xl font-black shadow-lg text-lg">
+            <a id="guardianLink" href="#" class="flex items-center justify-center bg-green-600 text-white py-4 rounded-xl font-black shadow-lg text-lg active:scale-95 transition-transform">
                 📞 CALL EMERGENCY CONTACT
             </a>
             <div class="grid grid-cols-2 gap-3">
-                <a href="https://www.google.com/maps/search/hospital+near+me" target="_blank" class="flex items-center justify-center bg-red-700 text-white py-4 rounded-xl font-bold shadow-md text-sm text-center">🏥 HOSPITALS</a>
+                <a href="https://www.google.com/maps/search/hospitals+near+me" target="_blank" class="flex items-center justify-center bg-red-700 text-white py-4 rounded-xl font-bold shadow-md text-sm text-center">🏥 HOSPITALS</a>
                 <a href="tel:108" class="flex items-center justify-center bg-blue-600 text-white py-4 rounded-xl font-bold shadow-md text-sm text-center">🚑 AMBULANCE</a>
             </div>
             <button onclick="shareLocation()" class="flex items-center justify-center bg-orange-500 text-white py-4 rounded-xl font-black shadow-lg text-lg">
@@ -53,60 +54,82 @@
             </button>
         </div>
 
-        <div id="registerCard" class="hidden bg-blue-50 rounded-2xl p-8 border-2 border-blue-200 text-center">
-            <div class="text-4xl mb-3">🏷️</div>
-            <h2 class="text-xl font-bold text-blue-800">New Tag Detected</h2>
-            <p class="text-sm text-gray-600 mb-6">This tag is not yet registered. If it belongs to you, please activate it now.</p>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDcJlTno__y6o4gQ_pgpYLcrCIIAywsQKaboyiqinwisXLVg/viewform?usp=publish-editor" class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-bold">REGISTER TAG</a>
-        </div>
-
         <div id="notesSection" class="hidden bg-white rounded-2xl shadow-md p-6">
             <h3 class="font-black text-gray-800 mb-2 uppercase text-xs tracking-widest border-b pb-2">Critical Medical Notes</h3>
             <p class="text-gray-600 text-sm leading-relaxed" id="medNotes">--</p>
         </div>
+
+        <div id="registerCard" class="hidden bg-blue-50 rounded-2xl p-8 border-2 border-blue-200 text-center">
+            <div class="text-5xl mb-3">🏷️</div>
+            <h2 class="text-xl font-bold text-blue-800">New Tag Detected</h2>
+            <p class="text-sm text-gray-600 mb-6 leading-relaxed">This tag is not yet registered. If this belongs to you, please activate your emergency profile now.</p>
+            <a id="registerButton" href="#" class="inline-block bg-blue-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg">REGISTER TAG</a>
+        </div>
+
+        <div id="editSection" class="hidden text-center mt-8 pb-10 border-t border-gray-200 pt-6">
+            <p class="text-[10px] text-gray-400 mb-3 uppercase tracking-widest font-bold">SafeTag Owner Tools</p>
+            <button onclick="handleEditRequest()" class="bg-gray-200 text-gray-600 px-6 py-2 rounded-full text-[10px] font-bold hover:bg-gray-300 transition-colors">
+                🔒 EDIT PROFILE
+            </button>
+        </div>
     </div>
 
     <script>
-        // THE CONNECTION POINT
         const firebaseURL = "https://safe-tag-2bf22-default-rtdb.firebaseio.com/users"; 
+        
+        // --- UPDATE THESE TWO VALUES ---
+        const formBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLSfDcJlTno__y6o4gQ_pgpYLcrCIIAywsQKaboyiqinwisXLVg/viewform";
+        const tagIdEntryField = "entry.123456789"; // Replace with your Entry ID from "Get pre-filled link"
+        // -------------------------------
 
         const params = new URLSearchParams(window.location.search);
         const currentID = params.get('id');
+        let profile = null;
 
         async function fetchSafeTag() {
             if (!currentID) {
-                document.getElementById('loader').innerText = "Please scan a valid SafeTag QR.";
+                document.getElementById('loader').innerHTML = "⚠️<br>Invalid Scan. Please use a real SafeTag.";
                 return;
             }
 
             try {
-                // Fetch specific user data from Firebase
                 const response = await fetch(`${firebaseURL}/${currentID}.json`);
                 const data = await response.json();
-
                 document.getElementById('loader').classList.add('hidden');
 
                 if (data) {
-                    // Show the UI
+                    profile = data;
                     document.getElementById('profileCard').classList.remove('hidden');
                     document.getElementById('actionGrid').classList.remove('hidden');
                     document.getElementById('notesSection').classList.remove('hidden');
+                    document.getElementById('editSection').classList.remove('hidden');
 
-                    // Fill the UI with Firebase data
                     document.getElementById('userName').innerText = data.name;
                     document.getElementById('initials').innerText = data.name.charAt(0).toUpperCase();
                     document.getElementById('bloodType').innerText = data.blood;
                     document.getElementById('allergyList').innerText = data.allergies || "None Reported";
-                    document.getElementById('vehicleID').innerText = "Vehicle: " + (data.vehicle || "Not Listed");
-                    document.getElementById('medNotes').innerText = data.notes || "No additional history provided.";
+                    document.getElementById('vehicleID').innerText = "Vehicle: " + (data.vehicle || "N/A");
+                    document.getElementById('medNotes').innerText = data.notes || "No additional medical history provided.";
                     document.getElementById('guardianLink').href = "tel:" + data.contact;
                 } else {
-                    // ID doesn't exist in Firebase yet
                     document.getElementById('registerCard').classList.remove('hidden');
+                    document.getElementById('registerButton').href = `${formBaseURL}?${tagIdEntryField}=${currentID}`;
                 }
-            } catch (error) {
-                document.getElementById('loader').innerText = "Error loading data. Check your internet.";
-                console.error(error);
+            } catch (e) {
+                document.getElementById('loader').innerText = "Connection Error. Refreshing...";
+                console.error(e);
+            }
+        }
+
+        function handleEditRequest() {
+            const enteredPin = prompt("Enter your 4-digit PIN to unlock editing:");
+            if (!enteredPin) return;
+
+            // Treat both as strings to ensure "0914" matches "0914"
+            if (profile && enteredPin.toString() === profile.pin.toString()) {
+                window.location.href = `${formBaseURL}?${tagIdEntryField}=${currentID}`;
+            } else {
+                alert("❌ Incorrect PIN. Access Denied.");
             }
         }
 
@@ -115,15 +138,14 @@
                 navigator.geolocation.getCurrentPosition(pos => {
                     const lat = pos.coords.latitude;
                     const lon = pos.coords.longitude;
-                    const msg = encodeURIComponent(`Emergency! I've been in an accident. My location: https://www.google.com/maps?q=${lat},${lon}`);
+                    const url = `https://www.google.com/maps?q=${lat},${lon}`;
+                    const msg = encodeURIComponent(`Emergency! My location: ${url}`);
                     window.location.href = `sms:?body=${msg}`;
-                });
+                }, () => alert("Please enable GPS to share location."));
             }
         }
 
-        // Initialize
         fetchSafeTag();
     </script>
 </body>
 </html>
-
