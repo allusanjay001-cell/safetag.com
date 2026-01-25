@@ -45,6 +45,14 @@
                 📞 CALL EMERGENCY CONTACT
             </a>
             
+            <a href="https://www.google.com/maps/search/hospitals+near+me/" target="_blank" class="flex items-center justify-center bg-red-700 text-white py-4 rounded-xl font-black shadow-lg text-lg hover:bg-red-800 transition active:scale-95 text-center">
+                🏥 FIND NEARBY HOSPITALS
+            </a>
+
+            <a href="https://www.google.com/maps/search/police+station+near+me/" target="_blank" class="flex items-center justify-center bg-gray-800 text-white py-4 rounded-xl font-black shadow-lg text-lg hover:bg-gray-900 transition active:scale-95 text-center">
+                👮 FIND NEARBY POLICE
+            </a>
+
             <button onclick="shareLocation()" class="flex items-center justify-center bg-orange-500 text-white py-4 rounded-xl font-black shadow-lg text-lg hover:bg-orange-600 transition active:scale-95">
                 📍 SEND MY LOCATION (SMS)
             </button>
@@ -61,41 +69,27 @@
     </div>
 
     <script>
-        /** * USER DATABASE SECTION
-         * This is where you enter your data. 
-         * Each user needs a unique ID (like "001", "002").
-         */
         const userData = {
             "001": {
-                name: "Rahul Sharma",
-                initials: "RS",
-                vehicle: "KA-01-AB-1234",
+                name: "Sanjay San",
+                initials: "S",
+                vehicle: "KA-01-JF-4162",
                 blood: "O Positive",
                 allergies: "Peanuts, Dust",
-                contact: "tel:+919876543210", // Change this to your real number
+                contact: "tel:+917022261205", 
                 notes: "Daily medication for BP. Inhaler in vehicle glovebox."
             },
             "002": {
-                name: "Sarah Jenkins",
-                initials: "SJ",
-                vehicle: "KA-03-XY-9999",
+                name: "Sai shetty",
+                initials: "L",
+                vehicle: "KA-51-HX-5846",
                 blood: "A Negative",
                 allergies: "Penicillin",
-                contact: "tel:+919988776655",
+                contact: "tel:+919742353260",
                 notes: "Diabetic. Emergency insulin is in the side pocket of the bag."
-            },
-            "003": {
-                name: "Test User Three",
-                initials: "TU",
-                vehicle: "KA-05-MH-5555",
-                blood: "B Positive",
-                allergies: "None",
-                contact: "tel:+910000000000",
-                notes: "This is a placeholder for your third customer."
             }
         };
 
-        // This function detects the ?id=001 part of your URL
         const params = new URLSearchParams(window.location.search);
         const currentID = params.get('id');
 
@@ -109,27 +103,20 @@
             document.getElementById('guardianLink').href = u.contact;
             document.getElementById('medNotes').innerText = u.notes;
         } else {
-            // Show this if someone scans a wrong or unassigned tag
             document.getElementById('userName').innerText = "SafeTag Not Assigned";
-            document.getElementById('allergyList').innerText = "Unregistered Tag";
-            document.getElementById('profileCard').classList.remove('border-red-600');
-            document.getElementById('profileCard').classList.add('border-gray-400');
         }
 
-        // Location sharing function
         function shareLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                    const smsBody = encodeURIComponent(`Emergency! An accident has been detected. Location: ${mapsUrl}`);
+                    const smsBody = encodeURIComponent(`Emergency! Accident detected. Location: ${mapsUrl}`);
                     window.location.href = `sms:?body=${smsBody}`;
                 }, () => {
-                    alert("Location access denied. Please enable GPS.");
+                    alert("Please enable GPS.");
                 });
-            } else {
-                alert("GPS not supported on this device.");
             }
         }
     </script>
