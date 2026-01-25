@@ -3,95 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeTag Emergency Profile</title>
+    <title>SafeTag Emergency Response</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .emergency-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+        .emergency-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans min-h-screen">
 
-    <div class="bg-red-600 p-6 text-white text-center shadow-lg">
-        <h1 class="text-2xl font-bold tracking-tight">SAFETAG EMERGENCY INFO</h1>
-        <p class="text-sm opacity-90 mt-1">First Responders: Please see details below</p>
+    <div class="bg-red-600 p-6 text-white text-center shadow-lg sticky top-0 z-50">
+        <h1 class="text-2xl font-bold tracking-tight uppercase">SafeTag Emergency Info</h1>
+        <p class="text-sm opacity-90 mt-1">Responders: Critical details below</p>
     </div>
 
     <div id="app" class="max-w-md mx-auto p-4 space-y-4">
-        <div class="bg-white rounded-2xl shadow-md p-6 border-t-4 border-red-500">
-            <div class="flex items-center space-x-4 mb-4">
-                <div class="h-16 w-16 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-500" id="initials">--</div>
+        
+        <div id="profileCard" class="bg-white rounded-2xl shadow-md p-6 border-t-8 border-red-600">
+            <div class="flex items-center space-x-4 mb-6">
+                <div class="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center text-3xl font-bold text-gray-400 border-2 border-gray-100" id="initials">--</div>
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800" id="name">Loading Profile...</h2>
-                    <p class="text-gray-500" id="vehicle">Vehicle: --</p>
+                    <h2 class="text-2xl font-bold text-gray-800 leading-tight" id="userName">Loading Profile...</h2>
+                    <p class="text-gray-500 font-medium" id="vehicleID">Vehicle: --</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 border-t pt-4">
+            <div class="grid grid-cols-2 gap-4 border-y py-4">
                 <div>
-                    <p class="text-xs text-gray-400 uppercase font-bold">Blood Group</p>
-                    <p class="text-lg font-bold text-red-600" id="blood">--</p>
+                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest">Blood Group</p>
+                    <p class="text-xl font-bold text-red-600" id="bloodType">--</p>
                 </div>
                 <div>
-                    <p class="text-xs text-gray-400 uppercase font-bold">Allergies</p>
-                    <p class="text-sm font-medium text-gray-700" id="allergies">None Reported</p>
+                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest">Allergies</p>
+                    <p class="text-sm font-bold text-gray-700" id="allergyList">Checking...</p>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-3">
-            <a id="callGuardian" href="#" class="flex items-center justify-center bg-green-600 text-white w-full py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition">
+        <div class="grid gap-3">
+            <a id="guardianLink" href="#" class="flex items-center justify-center bg-green-600 text-white py-4 rounded-xl font-black shadow-lg text-lg hover:bg-green-700 transition active:scale-95">
                 📞 CALL EMERGENCY CONTACT
             </a>
-            <a href="tel:911" class="flex items-center justify-center bg-blue-600 text-white w-full py-4 rounded-xl font-bold shadow-lg">
-                🚑 CALL AMBULANCE
+            
+            <button onclick="shareLocation()" class="flex items-center justify-center bg-orange-500 text-white py-4 rounded-xl font-black shadow-lg text-lg hover:bg-orange-600 transition active:scale-95">
+                📍 SEND MY LOCATION (SMS)
+            </button>
+
+            <a href="tel:108" class="flex items-center justify-center bg-blue-600 text-white py-4 rounded-xl font-black shadow-lg text-lg hover:bg-blue-700 transition active:scale-95">
+                🚑 CALL AMBULANCE (108)
             </a>
         </div>
 
         <div class="bg-white rounded-2xl shadow-md p-6">
-            <h3 class="font-bold text-gray-800 mb-2">Medical Notes</h3>
-            <p class="text-gray-600 text-sm" id="notes">No additional medical history provided.</p>
+            <h3 class="font-black text-gray-800 mb-2 uppercase text-xs tracking-widest border-b pb-2">Medical Notes</h3>
+            <p class="text-gray-600 text-sm leading-relaxed" id="medNotes">No specific history found.</p>
         </div>
     </div>
 
     <script>
-        // MOCK DATABASE: In a real app, this would come from your server
+        /** * USER DATABASE SECTION
+         * This is where you enter your data. 
+         * Each user needs a unique ID (like "001", "002").
+         */
         const userData = {
             "001": {
                 name: "Rahul Sharma",
                 initials: "RS",
-                vehicle: "KA-01-EF-1234",
+                vehicle: "KA-01-AB-1234",
                 blood: "O Positive",
-                allergies: "Penicillin, Peanuts",
-                contact: "tel:+1234567890",
-                notes: "Wears contact lenses. Asthmatic (Inhaler in backpack)."
+                allergies: "Peanuts, Dust",
+                contact: "tel:+919876543210", // Change this to your real number
+                notes: "Daily medication for BP. Inhaler in vehicle glovebox."
             },
             "002": {
                 name: "Sarah Jenkins",
                 initials: "SJ",
-                vehicle: "Bike - Trek Marlin 7",
+                vehicle: "KA-03-XY-9999",
                 blood: "A Negative",
+                allergies: "Penicillin",
+                contact: "tel:+919988776655",
+                notes: "Diabetic. Emergency insulin is in the side pocket of the bag."
+            },
+            "003": {
+                name: "Test User Three",
+                initials: "TU",
+                vehicle: "KA-05-MH-5555",
+                blood: "B Positive",
                 allergies: "None",
-                contact: "tel:+0987654321",
-                notes: "Diabetes Type 1. Insulin pump located on waist."
+                contact: "tel:+910000000000",
+                notes: "This is a placeholder for your third customer."
             }
         };
 
-        // Logic to read the URL: index.html?id=001
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('id');
+        // This function detects the ?id=001 part of your URL
+        const params = new URLSearchParams(window.location.search);
+        const currentID = params.get('id');
 
-        if (userData[userId]) {
-            const user = userData[userId];
-            document.getElementById('name').innerText = user.name;
-            document.getElementById('initials').innerText = user.initials;
-            document.getElementById('vehicle').innerText = "Vehicle: " + user.vehicle;
-            document.getElementById('blood').innerText = user.blood;
-            document.getElementById('allergies').innerText = user.allergies;
-            document.getElementById('callGuardian').href = user.contact;
-            document.getElementById('notes').innerText = user.notes;
+        if (userData[currentID]) {
+            const u = userData[currentID];
+            document.getElementById('userName').innerText = u.name;
+            document.getElementById('initials').innerText = u.initials;
+            document.getElementById('vehicleID').innerText = "Vehicle: " + u.vehicle;
+            document.getElementById('bloodType').innerText = u.blood;
+            document.getElementById('allergyList').innerText = u.allergies;
+            document.getElementById('guardianLink').href = u.contact;
+            document.getElementById('medNotes').innerText = u.notes;
         } else {
-            document.getElementById('name').innerText = "User Not Found";
+            // Show this if someone scans a wrong or unassigned tag
+            document.getElementById('userName').innerText = "SafeTag Not Assigned";
+            document.getElementById('allergyList').innerText = "Unregistered Tag";
+            document.getElementById('profileCard').classList.remove('border-red-600');
+            document.getElementById('profileCard').classList.add('border-gray-400');
+        }
+
+        // Location sharing function
+        function shareLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                    const smsBody = encodeURIComponent(`Emergency! An accident has been detected. Location: ${mapsUrl}`);
+                    window.location.href = `sms:?body=${smsBody}`;
+                }, () => {
+                    alert("Location access denied. Please enable GPS.");
+                });
+            } else {
+                alert("GPS not supported on this device.");
+            }
         }
     </script>
 </body>
