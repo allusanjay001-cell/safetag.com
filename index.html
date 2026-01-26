@@ -21,15 +21,17 @@
         <div id="loader" class="text-center py-24 text-gray-400 font-medium">
             <div class="animate-bounce mb-4 text-4xl text-red-600">📡</div>
             <div class="animate-pulse mb-2 text-sm uppercase tracking-widest">Accessing Secure Cloud...</div>
-            <p class="text-[10px] text-gray-400 italic">Verifying Tag ID Integrity</p>
         </div>
 
         <div id="profileCard" class="hidden bg-white rounded-3xl shadow-2xl p-6 border-t-[12px] border-red-600">
             <div class="flex items-center space-x-5 mb-8">
-                <div class="h-24 w-24 medical-gradient rounded-2xl flex items-center justify-center text-4xl font-black text-white shadow-lg border-4 border-white" id="initials">--</div>
+                <div class="h-24 w-24 medical-gradient rounded-2xl flex items-center justify-center text-4xl font-black text-white shadow-lg border-4 border-white overflow-hidden shrink-0">
+                    <img id="userPhoto" src="" class="hidden h-full w-full object-cover">
+                    <span id="initials">--</span>
+                </div>
                 <div>
                     <h2 class="text-3xl font-black text-gray-900 leading-tight tracking-tight" id="userName">--</h2>
-                    <span class="inline-block bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-1 rounded-md mt-1 uppercase tracking-widest" id="vehicleID">VEHICLE: --</span>
+                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mt-1">EMERGENCY PROFILE</p>
                 </div>
             </div>
 
@@ -39,16 +41,21 @@
                     <p class="text-3xl font-black text-red-600" id="bloodType">--</p>
                 </div>
                 <div>
-                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Status</p>
-                    <p class="text-sm font-black text-gray-800 uppercase italic">Verified</p>
+                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Insurance Policy</p>
+                    <p class="text-sm font-black text-gray-800 break-words leading-tight px-1" id="insuranceDetails">--</p>
                 </div>
             </div>
         </div>
 
         <div id="actionGrid" class="hidden space-y-3">
-            <a id="guardianLink" href="#" class="flex items-center justify-center bg-green-600 text-white py-5 rounded-2xl font-black shadow-xl text-xl border-b-4 border-green-800 active:scale-95 transition-transform">
-                📞 CALL GUARDIAN
-            </a>
+            <div class="grid grid-cols-2 gap-3">
+                <a id="guardianLink1" href="#" class="flex items-center justify-center bg-green-600 text-white py-5 rounded-2xl font-black shadow-xl text-sm border-b-4 border-green-800 active:scale-95 transition-transform uppercase">
+                    📞 G1: CALL
+                </a>
+                <a id="guardianLink2" href="#" class="flex items-center justify-center bg-green-700 text-white py-5 rounded-2xl font-black shadow-xl text-sm border-b-4 border-green-900 active:scale-95 transition-transform uppercase">
+                    📞 G2: CALL
+                </a>
+            </div>
             
             <div class="grid grid-cols-2 gap-3">
                 <a href="https://www.google.com/maps/search/hospitals+near+me" target="_blank" class="flex flex-col items-center justify-center bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-lg text-xs">
@@ -59,7 +66,7 @@
                 </a>
             </div>
 
-            <button onclick="shareLocation()" class="w-full flex items-center justify-center bg-orange-500 text-white py-5 rounded-2xl font-black shadow-xl text-lg border-b-4 border-orange-700 italic active:scale-95 transition-transform">
+            <button onclick="shareLocation()" class="w-full flex items-center justify-center bg-orange-500 text-white py-5 rounded-2xl font-black shadow-xl text-lg border-b-4 border-orange-700 italic active:scale-95 transition-transform uppercase">
                 📍 SEND MY LOCATION (SMS)
             </button>
         </div>
@@ -84,13 +91,11 @@
     </div>
 
     <script>
-        // --- SECURE SYSTEM SETTINGS ---
         const firebaseURL = "https://safe-tag-2bf22-default-rtdb.firebaseio.com/users"; 
         const formBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLSfDcJlTno__y6o4gQ_pgpYLcrCIIAywsQKaboyiqinwisXLVg/viewform";
-        const tagIdEntryField = "entry.878287220"; // Field ID for pre-filling
+        const tagIdEntryField = "entry.878287220"; 
 
         const params = new URLSearchParams(window.location.search);
-        // Ensure ID is uppercase for database consistency
         const currentID = params.get('id') ? params.get('id').toUpperCase() : null; 
         let profile = null;
 
@@ -101,28 +106,38 @@
             }
 
             try {
-                // Direct fetch from Firebase REST API
                 const response = await fetch(`${firebaseURL}/${currentID}.json`);
                 const data = await response.json();
                 document.getElementById('loader').classList.add('hidden');
 
                 if (data) {
                     profile = data;
-                    // Show Profile UI
                     document.getElementById('profileCard').classList.remove('hidden');
                     document.getElementById('actionGrid').classList.remove('hidden');
                     document.getElementById('notesSection').classList.remove('hidden');
                     document.getElementById('editSection').classList.remove('hidden');
 
-                    // Data Mapping to UI elements
+                    // Data Mapping
                     document.getElementById('userName').innerText = data.name || "SafeTag User";
-                    document.getElementById('initials').innerText = (data.name || "S").charAt(0).toUpperCase();
                     document.getElementById('bloodType').innerText = data.blood || "N/A";
-                    document.getElementById('vehicleID').innerText = "VEHICLE: " + (data.vehicle || "N/A");
-                    document.getElementById('medNotes').innerText = data.notes || "No additional medical history provided by owner.";
-                    document.getElementById('guardianLink').href = "tel:" + data.contact;
+                    document.getElementById('insuranceDetails').innerText = data.insurance || "Not Provided";
+                    document.getElementById('medNotes').innerText = data.notes || "No additional medical history provided.";
+                    
+                    // Dual Guardian Links
+                    document.getElementById('guardianLink1').href = "tel:" + (data.contact || "");
+                    document.getElementById('guardianLink2').href = "tel:" + (data.contact2 || ""); // Ensure contact2 is in Firebase
+
+                    // Photo & Initials Toggle
+                    const photoImg = document.getElementById('userPhoto');
+                    const initialsSpan = document.getElementById('initials');
+                    if (data.photoUrl) {
+                        photoImg.src = data.photoUrl;
+                        photoImg.classList.remove('hidden');
+                        initialsSpan.classList.add('hidden');
+                    } else {
+                        initialsSpan.innerText = (data.name || "S").charAt(0).toUpperCase();
+                    }
                 } else {
-                    // Show Registration Card if ID has no data
                     document.getElementById('registerCard').classList.remove('hidden');
                     document.getElementById('registerButton').href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
                 }
@@ -135,8 +150,6 @@
         function handleEditRequest() {
             const enteredPin = prompt("SECURE ACCESS: Enter your 4-digit PIN to edit this profile:");
             if (!enteredPin) return;
-
-            // Strict PIN verification against database record
             if (profile && enteredPin.toString() === profile.pin.toString()) {
                 window.location.href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
             } else {
@@ -153,11 +166,8 @@
                     const smsMsg = encodeURIComponent(`SafeTag Emergency! Victim Location: ${mapUrl}`);
                     window.location.href = `sms:?body=${smsMsg}`;
                 }, () => alert("GPS ERROR: Please enable location services in your browser."));
-            } else {
-                alert("Location sharing is not supported by this browser.");
             }
         }
-
         fetchSafeTag();
     </script>
 </body>
