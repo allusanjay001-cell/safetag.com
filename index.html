@@ -25,12 +25,13 @@
 
         <div id="profileCard" class="hidden bg-white rounded-3xl shadow-2xl p-6 border-t-[12px] border-red-600">
             <div class="flex items-center space-x-5 mb-8">
-                <div class="h-24 w-24 medical-gradient rounded-2xl flex items-center justify-center text-4xl font-black text-white shadow-lg border-4 border-white overflow-hidden shrink-0">
+                <div class="h-24 w-24 medical-gradient rounded-2xl flex items-center justify-center text-4xl font-black text-white shadow-lg border-4 border-white overflow-hidden shrink-0 relative">
                     <img id="userPhoto" src="" 
                          referrerpolicy="no-referrer" 
-                         onerror="this.style.display='none'; document.getElementById('initials').classList.remove('hidden');" 
-                         class="hidden h-full w-full object-cover">
-                    <span id="initials">--</span>
+                         class="hidden h-full w-full object-cover z-10"
+                         onload="this.classList.remove('hidden'); document.getElementById('initials').classList.add('hidden');"
+                         onerror="this.style.display='none'; document.getElementById('initials').classList.remove('hidden');">
+                    <span id="initials" class="z-0">--</span>
                 </div>
                 <div>
                     <h2 class="text-3xl font-black text-gray-900 leading-tight tracking-tight" id="userName">--</h2>
@@ -131,16 +132,17 @@
                     const photoImg = document.getElementById('userPhoto');
                     const initialsSpan = document.getElementById('initials');
 
-                    if (data.photoUrl && data.photoUrl !== "") {
-                        // FIX 3: Ensure display is set to block and hidden class is removed
-                        photoImg.src = data.photoUrl;
-                        photoImg.style.display = 'block'; 
-                        photoImg.classList.remove('hidden');
-                        initialsSpan.classList.add('hidden');
+                    // FIX: Standardize the photo URL to use Thumbnail API if it's a Drive link
+                    if (data.photoUrl && data.photoUrl.includes("drive.google.com")) {
+                        let fileId = data.photoUrl.split("id=")[1] || data.photoUrl.split("/d/")[1].split("/")[0];
+                        photoImg.src = `https://drive.google.com/thumbnail?sz=w1000&id=${fileId.split('&')[0]}`;
                     } else {
+                        photoImg.src = data.photoUrl || "";
+                    }
+
+                    if (!data.photoUrl) {
                         initialsSpan.innerText = (data.name || "S").charAt(0).toUpperCase();
                         initialsSpan.classList.remove('hidden');
-                        photoImg.classList.add('hidden');
                     }
                 } else {
                     document.getElementById('registerCard').classList.remove('hidden');
