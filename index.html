@@ -26,7 +26,10 @@
         <div id="profileCard" class="hidden bg-white rounded-3xl shadow-2xl p-6 border-t-[12px] border-red-600">
             <div class="flex items-center space-x-5 mb-8">
                 <div class="h-24 w-24 medical-gradient rounded-2xl flex items-center justify-center text-4xl font-black text-white shadow-lg border-4 border-white overflow-hidden shrink-0">
-                    <img id="userPhoto" src="" class="hidden h-full w-full object-cover">
+                    <img id="userPhoto" src="" 
+                         referrerpolicy="no-referrer" 
+                         onerror="this.style.display='none'; document.getElementById('initials').classList.remove('hidden');" 
+                         class="hidden h-full w-full object-cover">
                     <span id="initials">--</span>
                 </div>
                 <div>
@@ -117,25 +120,27 @@
                     document.getElementById('notesSection').classList.remove('hidden');
                     document.getElementById('editSection').classList.remove('hidden');
 
-                    // Data Mapping
                     document.getElementById('userName').innerText = data.name || "SafeTag User";
                     document.getElementById('bloodType').innerText = data.blood || "N/A";
                     document.getElementById('insuranceDetails').innerText = data.insurance || "Not Provided";
                     document.getElementById('medNotes').innerText = data.notes || "No additional medical history provided.";
                     
-                    // Dual Guardian Links
                     document.getElementById('guardianLink1').href = "tel:" + (data.contact || "");
-                    document.getElementById('guardianLink2').href = "tel:" + (data.contact2 || ""); // Ensure contact2 is in Firebase
+                    document.getElementById('guardianLink2').href = "tel:" + (data.contact2 || "");
 
-                    // Photo & Initials Toggle
                     const photoImg = document.getElementById('userPhoto');
                     const initialsSpan = document.getElementById('initials');
-                    if (data.photoUrl) {
+
+                    if (data.photoUrl && data.photoUrl !== "") {
+                        // FIX 3: Ensure display is set to block and hidden class is removed
                         photoImg.src = data.photoUrl;
+                        photoImg.style.display = 'block'; 
                         photoImg.classList.remove('hidden');
                         initialsSpan.classList.add('hidden');
                     } else {
                         initialsSpan.innerText = (data.name || "S").charAt(0).toUpperCase();
+                        initialsSpan.classList.remove('hidden');
+                        photoImg.classList.add('hidden');
                     }
                 } else {
                     document.getElementById('registerCard').classList.remove('hidden');
@@ -165,7 +170,7 @@
                     const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
                     const smsMsg = encodeURIComponent(`SafeTag Emergency! Victim Location: ${mapUrl}`);
                     window.location.href = `sms:?body=${smsMsg}`;
-                }, () => alert("GPS ERROR: Please enable location services in your browser."));
+                }, () => alert("GPS ERROR: Please enable location services."));
             }
         }
         fetchSafeTag();
