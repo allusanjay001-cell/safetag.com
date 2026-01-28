@@ -88,7 +88,7 @@
         <div id="registerCard" class="hidden bg-blue-600 rounded-3xl p-10 text-center shadow-2xl">
             <div class="text-6xl mb-6">🏷️</div>
             <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Activate This Tag</h2>
-            <p class="text-blue-100 text-sm mb-8 leading-relaxed font-medium">Protect yourself by linking this tag to your digital medical profile.</p>
+            <p class="text-blue-100 text-sm mb-8 leading-relaxed font-medium">Scan successful. Please link this tag to your profile to enable emergency protection.</p>
             <a id="registerButton" href="#" class="inline-block bg-white text-blue-700 px-12 py-5 rounded-2xl font-black shadow-xl uppercase hover:scale-105 transition-transform">Register Now</a>
         </div>
 
@@ -100,6 +100,7 @@
     </div>
 
     <script>
+        // CONFIGURATION
         const firebaseURL = "https://safe-tag-2bf22-default-rtdb.firebaseio.com/users"; 
         const formBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLSfDcJlTno__y6o4gQ_pgpYLcrCIIAywsQKaboyiqinwisXLVg/viewform";
         const tagIdEntryField = "entry.878287220"; 
@@ -126,7 +127,7 @@
                     document.getElementById('notesSection').classList.remove('hidden');
                     document.getElementById('editSection').classList.remove('hidden');
 
-                    // Mapping updated data fields
+                    // Data Mapping from Firebase Payload
                     document.getElementById('userName').innerText = data.name || "SafeTag User";
                     document.getElementById('bloodType').innerText = data.blood || "N/A";
                     document.getElementById('insuranceDetails').innerText = data.insurance || "Not Provided";
@@ -142,7 +143,7 @@
                     const initialsSpan = document.getElementById('initials');
 
                     if (data.photoUrl) {
-                        photoImg.src = data.photoUrl; // Apps Script already generates the thumbnail URL
+                        photoImg.src = data.photoUrl;
                     } else {
                         initialsSpan.innerText = (data.name || "S").charAt(0).toUpperCase();
                         initialsSpan.classList.remove('hidden');
@@ -152,7 +153,7 @@
                     document.getElementById('registerButton').href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
                 }
             } catch (e) {
-                document.getElementById('loader').innerText = "CONNECTION ERROR. REFRESHING...";
+                document.getElementById('loader').innerText = "CONNECTION ERROR. PLEASE REFRESH.";
             }
         }
 
@@ -161,7 +162,6 @@
             if (!enteredPin) return;
             
             if (profile && enteredPin.toString() === profile.pin.toString()) {
-                // Redirecting to form with Tag ID pre-filled for editing
                 window.location.href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
             } else {
                 alert("❌ ACCESS DENIED: Incorrect Security PIN.");
@@ -174,7 +174,7 @@
                     const lat = pos.coords.latitude;
                     const lon = pos.coords.longitude;
                     const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                    const smsMsg = encodeURIComponent(`SafeTag Emergency! Victim Location: ${mapUrl}`);
+                    const smsMsg = encodeURIComponent(`SafeTag Emergency! My Current Location: ${mapUrl}`);
                     window.location.href = `sms:?body=${smsMsg}`;
                 }, () => alert("GPS ERROR: Please enable location services."));
             }
