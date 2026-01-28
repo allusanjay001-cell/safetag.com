@@ -53,16 +53,18 @@
 
         <div id="actionGrid" class="hidden space-y-3">
             <div class="grid grid-cols-2 gap-3">
-                <a id="guardianLink1" href="#" class="flex items-center justify-center bg-green-600 text-white py-5 rounded-2xl font-black shadow-xl text-sm border-b-4 border-green-800 active:scale-95 transition-transform uppercase">
-                    📞 G1: CALL
+                <a id="guardianLink1" href="#" class="flex flex-col items-center justify-center bg-green-600 text-white py-4 rounded-2xl font-black shadow-xl text-[10px] border-b-4 border-green-800 active:scale-95 transition-transform uppercase">
+                    <span class="text-lg mb-1">📞 CALL G1</span>
+                    <span id="gName1">Guardian 1</span>
                 </a>
-                <a id="guardianLink2" href="#" class="flex items-center justify-center bg-green-700 text-white py-5 rounded-2xl font-black shadow-xl text-sm border-b-4 border-green-900 active:scale-95 transition-transform uppercase">
-                    📞 G2: CALL
+                <a id="guardianLink2" href="#" class="flex flex-col items-center justify-center bg-green-700 text-white py-4 rounded-2xl font-black shadow-xl text-[10px] border-b-4 border-green-900 active:scale-95 transition-transform uppercase">
+                    <span class="text-lg mb-1">📞 CALL G2</span>
+                    <span id="gName2">Guardian 2</span>
                 </a>
             </div>
             
             <div class="grid grid-cols-2 gap-3">
-                <a href="https://www.google.com/maps/search/hospitals+near+me" target="_blank" class="flex flex-col items-center justify-center bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-lg text-xs">
+                <a href="https://www.google.com/maps/search/hospital+near+me" target="_blank" class="flex flex-col items-center justify-center bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-lg text-xs">
                     <span class="text-lg mb-1">🏥</span> HOSPITALS
                 </a>
                 <a href="tel:108" class="flex flex-col items-center justify-center bg-blue-700 text-white py-4 rounded-2xl font-bold shadow-lg text-xs border-b-4 border-blue-900 active:scale-95 transition-transform">
@@ -75,15 +77,18 @@
             </button>
         </div>
 
-        <div id="notesSection" class="hidden bg-white rounded-3xl shadow-xl p-6 border-l-4 border-gray-200">
-            <h3 class="font-black text-gray-400 mb-3 uppercase text-[10px] tracking-[0.2em] italic">Medical History & Notes</h3>
-            <p class="text-gray-700 text-sm font-medium leading-relaxed italic" id="medNotes">--</p>
+        <div id="notesSection" class="hidden bg-white rounded-3xl shadow-xl p-6 border-l-4 border-red-500">
+            <h3 class="font-black text-gray-400 mb-2 uppercase text-[10px] tracking-[0.2em] italic">Critical Medical Info</h3>
+            <p class="text-red-700 text-sm font-bold leading-relaxed mb-4" id="medNotes">--</p>
+            
+            <h3 class="font-black text-gray-400 mb-2 uppercase text-[10px] tracking-[0.2em] italic">Primary Address</h3>
+            <p class="text-gray-700 text-sm font-medium leading-relaxed" id="userAddress">--</p>
         </div>
 
         <div id="registerCard" class="hidden bg-blue-600 rounded-3xl p-10 text-center shadow-2xl">
             <div class="text-6xl mb-6">🏷️</div>
             <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Activate This Tag</h2>
-            <p class="text-blue-100 text-sm mb-8 leading-relaxed font-medium">Protect yourself and your loved ones by linking this tag to your profile.</p>
+            <p class="text-blue-100 text-sm mb-8 leading-relaxed font-medium">Protect yourself by linking this tag to your digital medical profile.</p>
             <a id="registerButton" href="#" class="inline-block bg-white text-blue-700 px-12 py-5 rounded-2xl font-black shadow-xl uppercase hover:scale-105 transition-transform">Register Now</a>
         </div>
 
@@ -114,33 +119,31 @@
                 const data = await response.json();
                 document.getElementById('loader').classList.add('hidden');
 
-                if (data) {
+                if (data && data.name) {
                     profile = data;
                     document.getElementById('profileCard').classList.remove('hidden');
                     document.getElementById('actionGrid').classList.remove('hidden');
                     document.getElementById('notesSection').classList.remove('hidden');
                     document.getElementById('editSection').classList.remove('hidden');
 
+                    // Mapping updated data fields
                     document.getElementById('userName').innerText = data.name || "SafeTag User";
                     document.getElementById('bloodType').innerText = data.blood || "N/A";
                     document.getElementById('insuranceDetails').innerText = data.insurance || "Not Provided";
-                    document.getElementById('medNotes').innerText = data.notes || "No additional medical history provided.";
+                    document.getElementById('medNotes').innerText = data.medical || "No critical medical history provided.";
+                    document.getElementById('userAddress').innerText = data.address || "Address not listed.";
                     
-                    document.getElementById('guardianLink1').href = "tel:" + (data.contact || "");
-                    document.getElementById('guardianLink2').href = "tel:" + (data.contact2 || "");
+                    document.getElementById('gName1').innerText = data.contact1 || "Guardian 1";
+                    document.getElementById('gName2').innerText = data.contact2 || "Guardian 2";
+                    document.getElementById('guardianLink1').href = "tel:" + (data.phone1 || "");
+                    document.getElementById('guardianLink2').href = "tel:" + (data.phone2 || "");
 
                     const photoImg = document.getElementById('userPhoto');
                     const initialsSpan = document.getElementById('initials');
 
-                    // FIX: Standardize the photo URL to use Thumbnail API if it's a Drive link
-                    if (data.photoUrl && data.photoUrl.includes("drive.google.com")) {
-                        let fileId = data.photoUrl.split("id=")[1] || data.photoUrl.split("/d/")[1].split("/")[0];
-                        photoImg.src = `https://drive.google.com/thumbnail?sz=w1000&id=${fileId.split('&')[0]}`;
+                    if (data.photoUrl) {
+                        photoImg.src = data.photoUrl; // Apps Script already generates the thumbnail URL
                     } else {
-                        photoImg.src = data.photoUrl || "";
-                    }
-
-                    if (!data.photoUrl) {
                         initialsSpan.innerText = (data.name || "S").charAt(0).toUpperCase();
                         initialsSpan.classList.remove('hidden');
                     }
@@ -150,14 +153,15 @@
                 }
             } catch (e) {
                 document.getElementById('loader').innerText = "CONNECTION ERROR. REFRESHING...";
-                console.error(e);
             }
         }
 
         function handleEditRequest() {
-            const enteredPin = prompt("SECURE ACCESS: Enter your 4-digit PIN to edit this profile:");
+            const enteredPin = prompt("🔒 SECURE ACCESS: Enter your 4-digit PIN to edit this profile:");
             if (!enteredPin) return;
+            
             if (profile && enteredPin.toString() === profile.pin.toString()) {
+                // Redirecting to form with Tag ID pre-filled for editing
                 window.location.href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
             } else {
                 alert("❌ ACCESS DENIED: Incorrect Security PIN.");
