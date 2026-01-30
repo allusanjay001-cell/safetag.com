@@ -3,104 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SafeTag Emergency Response</title>
+    <title>SafeTag Pro | Emergency Response</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        .medical-gradient { background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%); }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .emergency-glow { box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
+        .btn-tap:active { transform: scale(0.96); transition: 0.1s; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen overflow-x-hidden selection:bg-red-100">
+<body class="text-slate-200 min-h-screen pb-10">
 
-    <div class="medical-gradient p-6 text-white text-center shadow-xl sticky top-0 z-50">
-        <h1 class="text-2xl font-black tracking-tighter uppercase italic">SafeTag Emergency Info</h1>
-        <p class="text-[10px] opacity-90 mt-1 font-bold tracking-[0.2em]">FIRST RESPONDERS: VITAL DATA BELOW</p>
+    <div class="bg-red-600 p-4 text-center shadow-2xl sticky top-0 z-50 border-b border-red-500">
+        <h1 class="text-xl font-black tracking-tighter uppercase italic text-white">SafeTag India</h1>
+        <p class="text-[9px] opacity-80 font-bold tracking-[0.3em] text-white">EMERGENCY MEDICAL PROFILE</p>
     </div>
 
-    <div id="app" class="max-w-md mx-auto p-4 space-y-4 pb-20">
+    <div id="app" class="max-w-md mx-auto p-5 space-y-5">
         
-        <div id="loader" class="text-center py-24 text-gray-400 font-medium">
-            <div class="animate-bounce mb-4 text-4xl text-red-600">📡</div>
-            <div class="animate-pulse mb-2 text-sm uppercase tracking-widest">Accessing Secure Cloud...</div>
+        <div id="loader" class="text-center py-32">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-red-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+            <div class="mt-4 text-xs uppercase tracking-widest text-slate-500">Securing Life Data...</div>
         </div>
 
-        <div id="profileCard" class="hidden bg-white rounded-3xl shadow-2xl p-6 border-t-[12px] border-red-600">
-            <div class="flex items-center space-x-5 mb-8">
-                <div class="h-24 w-24 medical-gradient rounded-2xl flex items-center justify-center text-4xl font-black text-white shadow-lg border-4 border-white overflow-hidden shrink-0 relative">
-                    <img id="userPhoto" src="" 
-                         referrerpolicy="no-referrer" 
-                         class="hidden h-full w-full object-cover z-10"
-                         onload="this.classList.remove('hidden'); document.getElementById('initials').classList.add('hidden');"
-                         onerror="this.style.display='none'; document.getElementById('initials').classList.remove('hidden');">
-                    <span id="initials" class="z-0">--</span>
+        <div id="profileCard" class="hidden glass rounded-3xl p-6 emergency-glow border-t-4 border-red-600">
+            <div class="flex items-center space-x-5 mb-6">
+                <div class="h-20 w-20 bg-slate-800 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-inner overflow-hidden shrink-0 border border-slate-700">
+                    <img id="userPhoto" src="" referrerpolicy="no-referrer" class="hidden h-full w-full object-cover">
+                    <span id="initials" class="">--</span>
                 </div>
                 <div>
-                    <h2 class="text-3xl font-black text-gray-900 leading-tight tracking-tight" id="userName">--</h2>
-                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mt-1">EMERGENCY PROFILE</p>
+                    <h2 class="text-2xl font-black text-white leading-tight tracking-tight" id="userName">--</h2>
+                    <div class="flex items-center mt-1 space-x-2">
+                        <span class="bg-red-600/20 text-red-500 text-[10px] px-2 py-0.5 rounded font-black border border-red-600/30 uppercase tracking-widest" id="bloodType">--</span>
+                        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Verified User</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 border-y border-gray-100 py-6 text-center">
-                <div class="border-r border-gray-100">
-                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Blood Group</p>
-                    <p class="text-3xl font-black text-red-600" id="bloodType">--</p>
-                </div>
-                <div>
-                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest mb-1">Insurance Policy</p>
-                    <p class="text-sm font-black text-gray-800 break-words leading-tight px-1" id="insuranceDetails">--</p>
-                </div>
+            <div class="bg-slate-900/50 rounded-2xl p-4 border border-slate-800">
+                <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Insurance Policy</p>
+                <p class="text-sm font-bold text-slate-300" id="insuranceDetails">--</p>
             </div>
         </div>
 
         <div id="actionGrid" class="hidden space-y-3">
             <div class="grid grid-cols-2 gap-3">
-                <a id="guardianLink1" href="#" class="flex flex-col items-center justify-center bg-green-600 text-white py-4 rounded-2xl font-black shadow-xl text-[10px] border-b-4 border-green-800 active:scale-95 transition-transform uppercase">
-                    <span class="text-lg mb-1">📞 CALL G1</span>
-                    <span id="gName1">Guardian 1</span>
+                <a id="guardianLink1" href="#" class="btn-tap flex flex-col items-center justify-center bg-emerald-600 text-white py-5 rounded-2xl font-black shadow-lg">
+                    <span class="text-xs opacity-70 mb-1">CALL PRIMARY</span>
+                    <span id="gName1" class="text-sm tracking-tight">--</span>
                 </a>
-                <a id="guardianLink2" href="#" class="flex flex-col items-center justify-center bg-green-700 text-white py-4 rounded-2xl font-black shadow-xl text-[10px] border-b-4 border-green-900 active:scale-95 transition-transform uppercase">
-                    <span class="text-lg mb-1">📞 CALL G2</span>
-                    <span id="gName2">Guardian 2</span>
+                <a id="guardianLink2" href="#" class="btn-tap flex flex-col items-center justify-center bg-slate-800 text-white py-5 rounded-2xl font-black shadow-lg border border-slate-700">
+                    <span class="text-xs opacity-70 mb-1">CALL SECONDARY</span>
+                    <span id="gName2" class="text-sm tracking-tight">--</span>
                 </a>
             </div>
             
             <div class="grid grid-cols-2 gap-3">
-                <a href="https://www.google.com/maps/search/hospital+near+me" target="_blank" class="flex flex-col items-center justify-center bg-gray-900 text-white py-4 rounded-2xl font-bold shadow-lg text-xs">
-                    <span class="text-lg mb-1">🏥</span> HOSPITALS
-                </a>
-                <a href="tel:108" class="flex flex-col items-center justify-center bg-blue-700 text-white py-4 rounded-2xl font-bold shadow-lg text-xs border-b-4 border-blue-900 active:scale-95 transition-transform">
-                    <span class="text-lg mb-1">🚑</span> AMBULANCE
+                <button onclick="shareWhatsApp()" class="btn-tap flex flex-col items-center justify-center bg-blue-600 text-white py-5 rounded-2xl font-black shadow-lg">
+                    <span class="text-lg">💬</span>
+                    <span class="text-[10px] mt-1 uppercase">WhatsApp Location</span>
+                </button>
+                <a href="tel:108" class="btn-tap flex flex-col items-center justify-center bg-red-600 text-white py-5 rounded-2xl font-black shadow-lg">
+                    <span class="text-lg">🚑</span>
+                    <span class="text-[10px] mt-1 uppercase tracking-widest">Call Ambulance</span>
                 </a>
             </div>
-
-            <button onclick="shareLocation()" class="w-full flex items-center justify-center bg-orange-500 text-white py-5 rounded-2xl font-black shadow-xl text-lg border-b-4 border-orange-700 italic active:scale-95 transition-transform uppercase">
-                📍 SEND MY LOCATION (SMS)
-            </button>
         </div>
 
-        <div id="notesSection" class="hidden bg-white rounded-3xl shadow-xl p-6 border-l-4 border-red-500">
-            <h3 class="font-black text-gray-400 mb-2 uppercase text-[10px] tracking-[0.2em] italic">Critical Medical Info</h3>
-            <p class="text-red-700 text-sm font-bold leading-relaxed mb-4" id="medNotes">--</p>
-            
-            <h3 class="font-black text-gray-400 mb-2 uppercase text-[10px] tracking-[0.2em] italic">Primary Address</h3>
-            <p class="text-gray-700 text-sm font-medium leading-relaxed" id="userAddress">--</p>
+        <div id="notesSection" class="hidden space-y-4">
+            <div class="glass rounded-3xl p-6 border-l-4 border-amber-500">
+                <h3 class="font-black text-amber-500 mb-2 uppercase text-[10px] tracking-widest">Medical Alerts</h3>
+                <p class="text-slate-200 text-sm font-medium leading-relaxed" id="medNotes">--</p>
+            </div>
+
+            <div class="glass rounded-3xl p-6 border-l-4 border-blue-500">
+                <h3 class="font-black text-blue-500 mb-2 uppercase text-[10px] tracking-widest">Extra Information</h3>
+                <p class="text-slate-200 text-sm font-medium leading-relaxed" id="extraInfo">--</p>
+            </div>
+
+            <div class="glass rounded-3xl p-6">
+                <h3 class="font-black text-slate-500 mb-2 uppercase text-[10px] tracking-widest">Home Address</h3>
+                <p class="text-slate-400 text-sm font-medium leading-relaxed italic" id="userAddress">--</p>
+            </div>
         </div>
 
-        <div id="registerCard" class="hidden bg-blue-600 rounded-3xl p-10 text-center shadow-2xl">
-            <div class="text-6xl mb-6">🏷️</div>
-            <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">Activate This Tag</h2>
-            <p class="text-blue-100 text-sm mb-8 leading-relaxed font-medium">Scan successful. Please link this tag to your profile to enable emergency protection.</p>
-            <a id="registerButton" href="#" class="inline-block bg-white text-blue-700 px-12 py-5 rounded-2xl font-black shadow-xl uppercase hover:scale-105 transition-transform">Register Now</a>
+        <div id="registerCard" class="hidden glass rounded-3xl p-10 text-center border-2 border-dashed border-slate-700">
+            <div class="text-5xl mb-6">🏷️</div>
+            <h2 class="text-xl font-black text-white mb-2">Tag Not Registered</h2>
+            <p class="text-slate-400 text-sm mb-8 leading-relaxed">This SafeTag is ready for activation. Link it now to protect your life.</p>
+            <a id="registerButton" href="#" class="btn-tap inline-block bg-red-600 text-white px-10 py-4 rounded-xl font-black shadow-xl uppercase tracking-tighter">Activate Tag</a>
         </div>
 
-        <div id="editSection" class="hidden text-center mt-12 pb-10 border-t border-gray-200 pt-8">
-            <button onclick="handleEditRequest()" class="bg-white border-2 border-gray-200 text-gray-500 px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-colors">
-                🔒 Secure Edit Access
+        <div id="editSection" class="hidden text-center mt-10">
+            <button onclick="handleEditRequest()" class="text-slate-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-slate-400 transition-colors">
+                🔒 OWNER ACCESS
             </button>
         </div>
     </div>
 
     <script>
-        // CONFIGURATION
         const firebaseURL = "https://safe-tag-2bf22-default-rtdb.firebaseio.com/users"; 
         const formBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLSfDcJlTno__y6o4gQ_pgpYLcrCIIAywsQKaboyiqinwisXLVg/viewform";
         const tagIdEntryField = "entry.878287220"; 
@@ -111,7 +114,7 @@
 
         async function fetchSafeTag() {
             if (!currentID) {
-                document.getElementById('loader').innerHTML = "⚠️<br>Invalid Scan.<br>Please use an authentic SafeTag.";
+                document.getElementById('loader').innerHTML = "<div class='text-red-500 font-black'>⚠️ INVALID SCAN</div>";
                 return;
             }
 
@@ -122,63 +125,58 @@
 
                 if (data && data.name) {
                     profile = data;
-                    document.getElementById('profileCard').classList.remove('hidden');
-                    document.getElementById('actionGrid').classList.remove('hidden');
-                    document.getElementById('notesSection').classList.remove('hidden');
-                    document.getElementById('editSection').classList.remove('hidden');
+                    ['profileCard', 'actionGrid', 'notesSection', 'editSection'].forEach(id => document.getElementById(id).classList.remove('hidden'));
 
-                    // Data Mapping from Firebase Payload
-                    document.getElementById('userName').innerText = data.name || "SafeTag User";
+                    document.getElementById('userName').innerText = data.name;
                     document.getElementById('bloodType').innerText = data.blood || "N/A";
-                    document.getElementById('insuranceDetails').innerText = data.insurance || "Not Provided";
-                    document.getElementById('medNotes').innerText = data.medical || "No critical medical history provided.";
-                    document.getElementById('userAddress').innerText = data.address || "Address not listed.";
+                    document.getElementById('insuranceDetails').innerText = data.insurance || "None Provided";
+                    document.getElementById('medNotes').innerText = data.medical || "No critical medical alerts.";
+                    document.getElementById('extraInfo').innerText = data.info || "No additional information provided.";
+                    document.getElementById('userAddress').innerText = data.address || "No address on file.";
                     
                     document.getElementById('gName1').innerText = data.contact1 || "Guardian 1";
                     document.getElementById('gName2').innerText = data.contact2 || "Guardian 2";
-                    document.getElementById('guardianLink1').href = "tel:" + (data.phone1 || "");
-                    document.getElementById('guardianLink2').href = "tel:" + (data.phone2 || "");
+                    document.getElementById('guardianLink1').href = `tel:${data.phone1}`;
+                    document.getElementById('guardianLink2').href = `tel:${data.phone2}`;
 
                     const photoImg = document.getElementById('userPhoto');
-                    const initialsSpan = document.getElementById('initials');
-
-                    if (data.photoUrl) {
+                    if (data.photoUrl && data.photoUrl !== "default") {
                         photoImg.src = data.photoUrl;
+                        photoImg.classList.remove('hidden');
+                        document.getElementById('initials').classList.add('hidden');
                     } else {
-                        initialsSpan.innerText = (data.name || "S").charAt(0).toUpperCase();
-                        initialsSpan.classList.remove('hidden');
+                        document.getElementById('initials').innerText = data.name.charAt(0);
                     }
                 } else {
                     document.getElementById('registerCard').classList.remove('hidden');
                     document.getElementById('registerButton').href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
                 }
             } catch (e) {
-                document.getElementById('loader').innerText = "CONNECTION ERROR. PLEASE REFRESH.";
+                document.getElementById('loader').innerText = "OFFLINE. RETRYING...";
             }
         }
 
-        function handleEditRequest() {
-            const enteredPin = prompt("🔒 SECURE ACCESS: Enter your 4-digit PIN to edit this profile:");
-            if (!enteredPin) return;
-            
-            if (profile && enteredPin.toString() === profile.pin.toString()) {
-                window.location.href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
-            } else {
-                alert("❌ ACCESS DENIED: Incorrect Security PIN.");
-            }
-        }
-
-        function shareLocation() {
+        function shareWhatsApp() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     const lat = pos.coords.latitude;
                     const lon = pos.coords.longitude;
-                    const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                    const smsMsg = encodeURIComponent(`SafeTag Emergency! My Current Location: ${mapUrl}`);
-                    window.location.href = `sms:?body=${smsMsg}`;
-                }, () => alert("GPS ERROR: Please enable location services."));
+                    const mapUrl = `http://googleusercontent.com/maps.google.com/2{lat},${lon}`;
+                    const msg = encodeURIComponent(`🚨 SafeTag Emergency Alert! View location: ${mapUrl}`);
+                    window.location.href = `https://wa.me/?text=${msg}`;
+                }, () => alert("Enable GPS for this feature."));
             }
         }
+
+        function handleEditRequest() {
+            const enteredPin = prompt("🔒 Verify Owner PIN:");
+            if (profile && enteredPin === profile.pin.toString()) {
+                window.location.href = `${formBaseURL}?usp=pp_url&${tagIdEntryField}=${currentID}`;
+            } else {
+                alert("Incorrect PIN.");
+            }
+        }
+
         fetchSafeTag();
     </script>
 </body>
